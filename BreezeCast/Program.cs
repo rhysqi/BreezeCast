@@ -16,6 +16,10 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 app.UseCors();
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://localhost:{port}");
+
 app.MapHub<ChatHub>("/chat");
 
 app.Run();
