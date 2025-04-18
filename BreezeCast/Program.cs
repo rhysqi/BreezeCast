@@ -20,6 +20,7 @@ app.UseCors();
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://localhost:{port}");
 
+app.MapGet("/", () => "✅ BreezeCast is running on Railway!");
 app.MapHub<ChatHub>("/chat");
 
 app.Run();
