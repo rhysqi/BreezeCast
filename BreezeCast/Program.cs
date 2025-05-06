@@ -8,20 +8,13 @@ using BreezeCast.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var CorsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
+// var CorsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
 
-builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection("CorsSettings"));
+// builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection("CorsSettings"));
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AppCors", policy => 
+	options.AddPolicy("DefaultPolicy", policy => 
 	{
-		// if (CorsSettings?.AllowedOrigins != null)
-		// {
-		// 	policy.WithOrigins(CorsSettings.AllowedOrigins)
-		// 		.AllowAnyHeader()
-		// 		.AllowAnyMethod()
-		// 		.AllowCredentials();
-		// }
 		policy.AllowAnyOrigin()
 			.AllowAnyHeader()
 			.AllowAnyMethod()
@@ -33,7 +26,7 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-app.UseCors("AppCors");
+app.UseCors();
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://0.0.0.0:{port}");
