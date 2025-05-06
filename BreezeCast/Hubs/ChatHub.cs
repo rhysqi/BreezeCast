@@ -8,20 +8,27 @@ namespace BreezeCast.Hubs
     public class ChatHub : Hub
     {
         // Thread safe dictionary to store the last message time for each client
-        private static readonly ConcurrentDictionary<string, DateTime> _lastMessageTime = new();
+        private static readonly ConcurrentDictionary<string, DateTime> _lastMessageTimeByIP = new();
 
         // Client message cooldown
         private static readonly TimeSpan _messageCooldown = TimeSpan.FromSeconds(5);
 
+        private string GetClientIP()
+        {
+            // Get the IP address of the client
+            return Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString() ?? "unknown";
+        }
+
         public override Task OnConnectedAsync()
         {
-            _lastMessageTime[Context.ConnectionId] = DateTime.MinValue;
+            _lastMessageTimeByIP[Context.ConnectionId] = DateTime.MinValue;
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            _lastMessageTime.TryRemove(Context.ConnectionId, out _);
+            string ip = GetClientIP();
+            _lastMessageTimeByIP.TryRemove(Context.ConnectionId, out _);
             return base.OnDisconnectedAsync(exception);
         }
 
@@ -30,7 +37,7 @@ namespace BreezeCast.Hubs
             var now = DateTime.UtcNow;
 
             // Ambil waktu terakhir kirim dari client ini
-            if (_lastMessageTime.TryGetValue(Context.ConnectionId, out var lastTime))
+            if (_lastMessageTimeByIP.TryGetValue(Context.ConnectionId, out var lastTime))
             {
                 var elapsed = now - lastTime;
 
@@ -45,7 +52,7 @@ namespace BreezeCast.Hubs
             }
 
             // Update waktu terakhir kirim pesan
-            _lastMessageTime[Context.ConnectionId] = now;
+            _lastMessageTimeByIP[Context.ConnectionId] = now;
 
             // Broadcast pesan ke semua client
             await Clients.All.SendAsync("ReceiveMessage", user, message);

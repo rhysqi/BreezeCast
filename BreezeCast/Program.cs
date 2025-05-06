@@ -3,19 +3,33 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.SignalR;
 
+using BreezeCast.Config;
 using BreezeCast.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var CorsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
+
+builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection("CorsSettings"));
 builder.Services.AddCors(options =>
 {
-	options.AddDefaultPolicy(policy =>
-        policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed(_ => true));
+	options.AddPolicy("AppCors", policy => 
+	{
+		if (CorsSettings?.AllowedOrigins != null)
+		{
+			policy.WithOrigins(CorsSettings.AllowedOrigins)
+				.AllowAnyHeader()
+				.AllowAnyMethod()
+				.AllowCredentials();
+		}
+	});
 });
 
 builder.Services.AddSignalR();
 
 var app = builder.Build();
-app.UseCors();
+
+app.UseCors("AppCors");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://0.0.0.0:{port}");

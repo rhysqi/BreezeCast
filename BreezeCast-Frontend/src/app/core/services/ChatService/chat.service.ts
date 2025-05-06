@@ -13,7 +13,7 @@ export class ChatService {
 
   public connectToChat(): void {
     this.hubConnection = new Chat.HubConnectionBuilder()
-      .withUrl('http://localhost:8080/chat')
+      .withUrl('https://breezecast-production-f9c3.up.railway.app/chat')
       .withAutomaticReconnect()
       .build();
 
