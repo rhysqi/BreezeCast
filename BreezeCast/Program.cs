@@ -15,13 +15,17 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy("AppCors", policy => 
 	{
-		if (CorsSettings?.AllowedOrigins != null)
-		{
-			policy.WithOrigins(CorsSettings.AllowedOrigins)
-				.AllowAnyHeader()
-				.AllowAnyMethod()
-				.AllowCredentials();
-		}
+		// if (CorsSettings?.AllowedOrigins != null)
+		// {
+		// 	policy.WithOrigins(CorsSettings.AllowedOrigins)
+		// 		.AllowAnyHeader()
+		// 		.AllowAnyMethod()
+		// 		.AllowCredentials();
+		// }
+		policy.AllowAnyOrigin()
+			.AllowAnyHeader()
+			.AllowAnyMethod()
+			.AllowCredentials();
 	});
 });
 
