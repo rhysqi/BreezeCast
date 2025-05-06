@@ -11,7 +11,7 @@ builder.Services.AddCors(options =>
 {
 	options.AddDefaultPolicy(policy => 
 	{
-		policy.WithOrigins("https://breeze-chat.netlify.app/")
+		policy.AllowAnyOrigin()
 			.AllowAnyHeader()
 			.AllowAnyMethod()
 			.AllowCredentials();
