@@ -7,21 +7,21 @@ using BreezeCast.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-	options.AddDefaultPolicy(policy => 
-	{
-		policy.AllowAnyOrigin()
-			.AllowAnyHeader()
-			.AllowAnyMethod()
-			.AllowCredentials();
-	});
-});
+// builder.Services.AddCors(options =>
+// {
+// 	options.AddPolicy("Rule1", policy => 
+// 	{
+// 		policy.AllowAnyOrigin()
+// 			.AllowAnyHeader()
+// 			.AllowAnyMethod()
+// 			.AllowCredentials();
+// 	});
+// });
 
 builder.Services.AddSignalR();
 
 var app = builder.Build();
-app.UseCors();
+// app.UseCors("Rule1");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://0.0.0.0:{port}");
