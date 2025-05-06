@@ -36,12 +36,12 @@ namespace BreezeCast.Hubs
         {
             var now = DateTime.UtcNow;
 
-            // Ambil waktu terakhir kirim dari client ini
+            // Take last message time for the current client
             if (_lastMessageTimeByIP.TryGetValue(Context.ConnectionId, out var lastTime))
             {
                 var elapsed = now - lastTime;
 
-                // Kalau belum cukup waktu, kasih notifikasi rate limit
+                // Setup rate limiting
                 if (elapsed < _messageCooldown)
                 {
                     var remaining = (_messageCooldown - elapsed).TotalSeconds;
@@ -51,10 +51,10 @@ namespace BreezeCast.Hubs
                 }
             }
 
-            // Update waktu terakhir kirim pesan
+            // Update the last message time for the current client
             _lastMessageTimeByIP[Context.ConnectionId] = now;
 
-            // Broadcast pesan ke semua client
+            // Broadcast the message to all clients
             await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
     }
